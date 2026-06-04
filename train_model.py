@@ -28,7 +28,7 @@ for col in categorical_columns:
     label_encoders[col] = le
 
 # Features and target
-X = data.drop("pass_fail", axis=1)
+X = data.drop(["math score", "pass_fail"], axis=1)
 y = data["pass_fail"]
 
 # Split dataset
