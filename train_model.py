@@ -6,7 +6,7 @@ from sklearn.metrics import accuracy_score
 import joblib
 
 # Load dataset
-data = pd.read_excel("Student_Performence(1).xlsx")
+data = pd.read_excel("Student_Performence.xlsx")
 
 # Create target column
 data["pass_fail"] = (data["math score"] >= 50).astype(int)
