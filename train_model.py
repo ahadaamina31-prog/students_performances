@@ -7,12 +7,11 @@ import joblib
 
 # Load dataset
 data = pd.read_excel("Student_Performance.xlsx")
-# Create target column
+
+# Create target column (PASS if math score >= 50)
 data["pass_fail"] = (data["math score"] >= 50).astype(int)
 
-# Encode categorical columns
-label_encoders = {}
-
+# Categorical columns
 categorical_columns = [
     "gender",
     "race/ethnicity",
@@ -20,6 +19,9 @@ categorical_columns = [
     "lunch",
     "test preparation course"
 ]
+
+# Store encoders (IMPORTANT)
+label_encoders = {}
 
 for col in categorical_columns:
     le = LabelEncoder()
@@ -52,7 +54,8 @@ y_pred = model.predict(X_test)
 accuracy = accuracy_score(y_test, y_pred)
 print(f"Model Accuracy: {accuracy:.2f}")
 
-# Save model
+# Save model + encoders (VERY IMPORTANT)
 joblib.dump(model, "student_model.pkl")
+joblib.dump(label_encoders, "label_encoders.pkl")
 
-print("Model saved as student_model.pkl")
+print("Model + encoders saved successfully")

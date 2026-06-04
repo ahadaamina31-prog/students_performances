@@ -8,52 +8,48 @@ model = joblib.load("student_model.pkl")
 st.title("🎓 Student Performance Prediction System")
 st.write("Predict whether a student will PASS or FAIL")
 
-# Inputs (must match training features order)
-gender = st.selectbox("Gender", ["female", "male"])
+# --- Encoding maps (SAFE & CONSISTENT) ---
+gender_map = {"female": 0, "male": 1}
 
-race = st.selectbox(
-    "Race/Ethnicity",
-    ["group A", "group B", "group C", "group D", "group E"]
-)
+race_map = {
+    "group A": 0,
+    "group B": 1,
+    "group C": 2,
+    "group D": 3,
+    "group E": 4
+}
 
-parental_edu = st.selectbox(
-    "Parental Level of Education",
-    [
-        "some high school",
-        "high school",
-        "some college",
-        "associate's degree",
-        "bachelor's degree",
-        "master's degree"
-    ]
-)
+parental_map = {
+    "some high school": 0,
+    "high school": 1,
+    "some college": 2,
+    "associate's degree": 3,
+    "bachelor's degree": 4,
+    "master's degree": 5
+}
 
-lunch = st.selectbox("Lunch", ["standard", "free/reduced"])
+lunch_map = {"standard": 0, "free/reduced": 1}
+test_map = {"none": 0, "completed": 1}
 
-test_prep = st.selectbox("Test Preparation Course", ["none", "completed"])
+# --- Inputs ---
+gender = st.selectbox("Gender", list(gender_map.keys()))
+race = st.selectbox("Race/Ethnicity", list(race_map.keys()))
+parental_edu = st.selectbox("Parental Level of Education", list(parental_map.keys()))
+lunch = st.selectbox("Lunch", list(lunch_map.keys()))
+test_prep = st.selectbox("Test Preparation Course", list(test_map.keys()))
 
-reading_score = st.number_input("Reading Score", min_value=0, max_value=100)
-writing_score = st.number_input("Writing Score", min_value=0, max_value=100)
+reading_score = st.number_input("Reading Score", 0, 100, value=50)
+writing_score = st.number_input("Writing Score", 0, 100, value=50)
 
-# Simple encoding (IMPORTANT: must match training LabelEncoder order)
-def encode(value, options):
-    return options.index(value)
-
+# --- Prediction ---
 if st.button("Predict Result"):
 
     input_data = np.array([[
-        encode(gender, ["female", "male"]),
-        encode(race, ["group A", "group B", "group C", "group D", "group E"]),
-        encode(parental_edu, [
-            "some high school",
-            "high school",
-            "some college",
-            "associate's degree",
-            "bachelor's degree",
-            "master's degree"
-        ]),
-        encode(lunch, ["free/reduced", "standard"]),
-        encode(test_prep, ["none", "completed"]),
+        gender_map[gender],
+        race_map[race],
+        parental_map[parental_edu],
+        lunch_map[lunch],
+        test_map[test_prep],
         reading_score,
         writing_score
     ]])
