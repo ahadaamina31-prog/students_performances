@@ -1,37 +1,59 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import accuracy_score
+import joblib
 
 # Load dataset
-data = pd.read_csv("student_performance.csv")
+data = pd.read_excel("Student_Performence(1).xlsx")
 
-# Features (Input)
-X = data[["StudyHours", "Attendance", "PreviousScore"]]
+# Create target column
+data["pass_fail"] = (data["math score"] >= 50).astype(int)
 
-# Target (Output)
-y = data["Pass"]
+# Encode categorical columns
+label_encoders = {}
+
+categorical_columns = [
+    "gender",
+    "race/ethnicity",
+    "parental level of education",
+    "lunch",
+    "test preparation course"
+]
+
+for col in categorical_columns:
+    le = LabelEncoder()
+    data[col] = le.fit_transform(data[col])
+    label_encoders[col] = le
+
+# Features and target
+X = data.drop("pass_fail", axis=1)
+y = data["pass_fail"]
 
 # Split dataset
 X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42
+    X, y,
+    test_size=0.2,
+    random_state=42
 )
 
-# Create model
-model = LogisticRegression()
-
 # Train model
+model = RandomForestClassifier(
+    n_estimators=100,
+    random_state=42
+)
+
 model.fit(X_train, y_train)
 
-# Check accuracy
-accuracy = model.score(X_test, y_test)
-print("Accuracy:", accuracy)
+# Predictions
+y_pred = model.predict(X_test)
 
-# Predict a new student
-new_student = [[6, 85, 70]]
+# Accuracy
+accuracy = accuracy_score(y_test, y_pred)
+print(f"Model Accuracy: {accuracy:.2f}")
 
-result = model.predict(new_student)
+# Save model
+joblib.dump(model, "student_model.pkl")
 
-if result[0] == 1:
-    print("Student will PASS")
-else:
-    print("Student will FAIL")
+print("Model saved as student_model.pkl")
